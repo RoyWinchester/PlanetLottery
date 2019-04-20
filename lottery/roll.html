@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,6 +9,7 @@
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <link rel="stylesheet" href="../css/gbfstyle.css" type="text/css" />
 	<link rel="stylesheet" href="../css/gbf-origin.css" type="text/css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="../css/roll.css" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
     <!-- Compiled and minified JavaScript -->
@@ -35,10 +36,15 @@
       <p id="roll-result">啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
     </div>
     <div class="modal-footer" id="modal-btns" style="background-color:transparent;">
-	<a href="gbfdraw.html" class=" modal-action modal-close waves-effect btn-gbf">前往抽卡</a>
+	<a href="../index.html" class=" modal-action modal-close waves-effect btn-gbf">返回首页</a>
       <a href="#" class=" modal-action modal-close waves-effect btn-gbf" onclick="roulette_reload()">当做无事发生</a>
     </div>
   </div>
+  <div class="fixed-action-btn horizontal">
+    <a href="../index.html" class="btn-floating btn-large red tooltipped" data-position="top" data-delay="50" data-tooltip="回到上一级">
+        <i class="large material-icons" >replay</i>
+    </a>
+    </div>
 </body>
 
 
@@ -112,7 +118,7 @@
                     var pattern = sector.createPattern(texture_list[i%tex_num],"repeat");
                 }
                 else{
-                    var pattern = sector.createPattern(texture_list[(i+1)%tex_num],"repeat");
+                    var pattern = sector.createPattern(texture_list[(i+2)%tex_num],"repeat");
                 }
                 sector.fillStyle = pattern;
             }
@@ -126,9 +132,20 @@
             sector.save();
             //绘制项目文字
             sector.translate(500, 90)
-            sector.font = "60px Impact";
+            var k = 155/40; //建立字符串长度和字体大小的关系
+            var jmz = {};
+            jmz.GetLength = function(str) {
+                    return item.name.replace(/[\u0391-\uFFE5]/g,"aa").length;  //先把中文替换成两个字节的英文，在计算长度
+            };
+            var fontSize = 77.5 - k*jmz.GetLength();
+            sector.font = fontSize+"px Impact";
             sector.fillStyle = "white";
-            sector.fillText(item.name, -300, -70);
+            var padding = -360;
+            s = item.name.substring(0,1);
+            if( !/^[a-zA-Z]+$/.test(s)){
+            padding += -15
+            }
+            sector.fillText(item.name, padding, -70);
             sector.restore();
 
             sector.rotate(angle*item.weight/2); //旋转画布
@@ -150,7 +167,7 @@
         for(var i=0;i<data.length;i++){
             end+=data[i].weight*angle;
             if(arc>=sec && arc<=end){
-                $('#roll-result').text(data[i].name+"连无料！");
+                $('#roll-result').text(data[i].name+"！");
                 $('#modal1').modal('open');
                 break;
             }
