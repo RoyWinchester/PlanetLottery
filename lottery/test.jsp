@@ -1,9 +1,37 @@
-<%@ page import="net.sf.json.*"%>
-<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="java.io.*,java.util.*,java.sql.*"%>
+<%@ page import="javax.servlet.http.*,javax.servlet.*" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql"%>
 <%
 response.setHeader("Content-Type","text/html;charset=utf-8");
-String str="[{\"name\": \"10\",\"weight\":30},{\"name\": \"20\",\"weight\":25},{\"name\": \"30\",\"weight\":10},{\"name\": \"40\",\"weight\":10},{\"name\": \"50\",\"weight\":5},{\"name\": \"100\",\"weight\":3}]";
-out.print(str);
+try {  
+            Class.forName("com.mysql.jdbc.Driver");  
+            String url = "jdbc:mysql://localhost:3306/PlanetLottery"; 
+            String username = "root";
+            String password = "98fan@kun";
+            Connection conn = DriverManager.getConnection(url, username, password);
+            if(conn != null){            
+                Statement stmt = null;  
+                ResultSet rs = null;  
+                String sql = "SELECT *FROM rollset;";  
+                stmt = conn.createStatement();  
+                rs = stmt.executeQuery(sql); 
+                String str = "["; 
+                while (rs.next()) {
+                 	str += "{\"name\":\""+rs.getString("name")+"\",\"weight\":"+rs.getInt("weight")+"},";	 
+           		}
+				str = str.substring(0,str.length()-1);
+				str+="]";
+				out.print(str);
+            }
+            else{  
+                //out.print("连接失败！");  
+            }  
+        }catch (Exception e) {        
+            //out.print("数据库连接异常！");  
+        }  	
 out.flush();
 out.close();
 %>
